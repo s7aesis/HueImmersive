@@ -22,10 +22,32 @@ public class Main
 	public static void main(String[] args) throws Exception
 	{
 		arguments.addAll(Arrays.asList(args));
-		
-		Settings.checkArguments();
-		arguments.addAll(Settings.getArguments());
-		
+		arguments.addAll(Settings.Main.getArguments());
+
+		// check argument conflicts
+		ArrayList<String> settingsarguments = Settings.Main.getArguments();
+		for (String arg : arguments)
+		{
+			switch (arg)
+			{
+				case "force-on":
+					arguments.remove("force-off");
+					settingsarguments.remove("force-off");
+					break;
+				case "force-off":
+					arguments.remove("force-on");
+					arguments.remove("force-start");
+					settingsarguments.remove("force-on");
+					settingsarguments.remove("force-start");
+					break;
+				case "force-start":
+					arguments.remove("force-off");
+					settingsarguments.remove("force-off");
+					break;
+			}
+		}
+		Settings.Main.setArguments(settingsarguments);
+
 		// check program arguments
 		if(arguments.contains("debug"))
 		{
@@ -46,9 +68,8 @@ public class Main
 				"os: " + System.getProperty("os.name"),
 				"java version: " + System.getProperty("java.version"));
 		Debug.info("program arguments", (Object[])arguments.toArray());
-		
-		Settings.check();
-		Settings.debug();
+
+		Settings.Main.debug();
 		Settings.Bridge.debug();
 		Settings.Light.debug();
 		

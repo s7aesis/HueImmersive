@@ -152,14 +152,14 @@ public class MainInterface
 		frame.setTitle("Hue Immersive");
 		frame.setBounds(100, 100, 243, 280);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocation(Settings.getInteger("ui_x"), Settings.getInteger("ui_y"));
+		frame.setLocation(Settings.Main.getInt("ui_x"), Settings.Main.getInt("ui_y"));
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) 
 			{
 				Debug.closeLog();
-				Settings.set("ui_x", frame.getX());
-				Settings.set("ui_y", frame.getY());
+				Settings.Main.setInt("ui_x", frame.getX());
+				Settings.Main.setInt("ui_y", frame.getY());
 				cpi.hide();
 			}
 		});
@@ -269,12 +269,12 @@ public class MainInterface
 		checkbox_Format = new JComboBox();
 		checkbox_Format.setToolTipText("set the capture area");
 		checkbox_Format.setModel(new DefaultComboBoxModel(new String[] {"Fullscreen", "16:9 Widescreen", "21:9 Cinema", "Borderless (Windows)", "4:3 Traditional television"}));
-		checkbox_Format.setSelectedIndex(Settings.getInteger("format"));
+		checkbox_Format.setSelectedIndex(Settings.Main.getInt("format"));
 		checkbox_Format.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				Settings.set("format", checkbox_Format.getSelectedIndex()); 
+				Settings.Main.setInt("format", checkbox_Format.getSelectedIndex());
 				try
 				{
 					ImmersiveProcess.setStandbyOutput();
@@ -295,7 +295,7 @@ public class MainInterface
 		// CheckBox to show the color grid (debug feature)
 		checkbox_ShowColorGrid = new JCheckBox("   show color grid");
 		checkbox_ShowColorGrid.setToolTipText("show the color/chunks grid");
-		checkbox_ShowColorGrid.setSelected(Settings.getBoolean("colorgrid"));
+		checkbox_ShowColorGrid.setSelected(Settings.Main.getBoolean("colorgrid"));
 		if(checkbox_ShowColorGrid.isSelected() == true)
 		{
 			cpi.show();
@@ -309,7 +309,7 @@ public class MainInterface
 			{
 				try
 				{
-					Settings.set("colorgrid", checkbox_ShowColorGrid.isSelected());
+					Settings.Main.setBoolean("colorgrid", checkbox_ShowColorGrid.isSelected());
 					if(checkbox_ShowColorGrid.isSelected() == true)
 					{
 						cpi.show(); 
@@ -350,13 +350,13 @@ public class MainInterface
 		sSetChunks.setMinorTickSpacing(1);
 		sSetChunks.setMajorTickSpacing(1);
 		sSetChunks.setMaximum(30);
-		sSetChunks.setValue(Settings.getInteger("chunks"));
+		sSetChunks.setValue(Settings.Main.getInt("chunks"));
 		panel_Chunks.add(sSetChunks, "1, 1, center, center");
 
 		sSetChunks.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) 
 			{
-				Settings.set("chunks", sSetChunks.getValue());
+				Settings.Main.setInt("chunks", sSetChunks.getValue());
 				try
 				{
 					ImmersiveProcess.setStandbyOutput();
@@ -384,7 +384,7 @@ public class MainInterface
 		frame.getContentPane().add(panel_Brightness, "2, 4, 3, 1, fill, fill");	
 		
 		// Label brightness percentage
-		label_BrightnessPercentage = new JLabel(Settings.getInteger("brightness") + " %");
+		label_BrightnessPercentage = new JLabel(Settings.Main.getInt("brightness") + " %");
 		label_BrightnessPercentage.setIconTextGap(3);
 		label_BrightnessPercentage.setAlignmentX(Component.CENTER_ALIGNMENT);
 		label_BrightnessPercentage.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -396,12 +396,12 @@ public class MainInterface
 		slider_Brightness.setMinorTickSpacing(5);
 		slider_Brightness.setSnapToTicks(true);
 		slider_Brightness.setMinimum(5);
-		slider_Brightness.setValue(Settings.getInteger("brightness"));
+		slider_Brightness.setValue(Settings.Main.getInt("brightness"));
 		slider_Brightness.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e)
 			{
 				label_BrightnessPercentage.setText(String.valueOf(slider_Brightness.getValue()) + " %");
-				Settings.set("brightness", slider_Brightness.getValue());
+				Settings.Main.setInt("brightness", slider_Brightness.getValue());
 			}
 		});
 		panel_Brightness.add(slider_Brightness, "1, 1, center, center");
@@ -426,19 +426,19 @@ public class MainInterface
 		slider_Saturation.setMaximum(150);
 		slider_Saturation.setMinorTickSpacing(5);
 		slider_Saturation.setMinimum(50);
-		slider_Saturation.setValue(Settings.getInteger("saturation"));
+		slider_Saturation.setValue(Settings.Main.getInt("saturation"));
 		slider_Saturation.setSnapToTicks(true);
 		slider_Saturation.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) 
 			{
 				label_SaturationPercentage.setText(String.valueOf(slider_Saturation.getValue()) + " %");
-				Settings.set("saturation", slider_Saturation.getValue());
+				Settings.Main.setInt("saturation", slider_Saturation.getValue());
 			}
 		});
 		panel_Saturation.add(slider_Saturation, "1, 1, center, center");
 		
 		// Label saturation percentage
-		label_SaturationPercentage = new JLabel(Settings.getInteger("saturation") + " %");
+		label_SaturationPercentage = new JLabel(Settings.Main.getInt("saturation") + " %");
 		panel_Saturation.add(label_SaturationPercentage, "2, 1, center, center");
 		
 		// Label "refresh speed"
@@ -459,18 +459,18 @@ public class MainInterface
 		slider_RefreshDelay.setMaximum(1000);
 		slider_RefreshDelay.setMinorTickSpacing(100);
 		slider_RefreshDelay.setMinimum(100);
-		slider_RefreshDelay.setValue(Settings.getInteger("refreshdelay"));
+		slider_RefreshDelay.setValue(Settings.Main.getInt("refreshdelay"));
 		slider_RefreshDelay.setSnapToTicks(true);
 		slider_RefreshDelay.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				label_RefreshDelayAmount.setText(String.valueOf(slider_RefreshDelay.getValue()) + " ms");
-				Settings.set("refreshdelay", slider_RefreshDelay.getValue());
+				Settings.Main.setInt("refreshdelay", slider_RefreshDelay.getValue());
 			}
 		});
 		panel_RefreshDelay.add(slider_RefreshDelay, "1, 1, center, center");
 
 		// Label RefreshDelay percentage
-		label_RefreshDelayAmount = new JLabel(Settings.getInteger("refreshdelay") + " ms");
+		label_RefreshDelayAmount = new JLabel(Settings.Main.getInt("refreshdelay") + " ms");
 		panel_RefreshDelay.add(label_RefreshDelayAmount, "2, 1, center, center");
 		
 		frame.getContentPane().add(checkbox_ShowColorGrid, "1, 7, 4, 1");
@@ -481,10 +481,10 @@ public class MainInterface
 		checkbox_RestoreLight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				Settings.set("restorelight", checkbox_RestoreLight.isSelected());
+				Settings.Main.setBoolean("restorelight", checkbox_RestoreLight.isSelected());
 			}
 		});
-		checkbox_RestoreLight.setSelected(Settings.getBoolean("restorelight"));
+		checkbox_RestoreLight.setSelected(Settings.Main.getBoolean("restorelight"));
 		frame.getContentPane().add(checkbox_RestoreLight, "1, 8, 4, 1");
 		
 		// Button stop
@@ -555,7 +555,13 @@ public class MainInterface
 		menuitem_Options.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				new OptionInterface();
+				try
+				{
+					new OptionInterface();
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		});
 		menu_Settings.add(menuitem_Options);
@@ -685,11 +691,11 @@ public class MainInterface
 
 			for (ILight light : Control.bridge.getLights())
 			{
-				if (light.isOn() && Settings.Light.getActive(light))
+				if (light.isOn() && light.getActive())
 				{
 					lightOn = true;
 				}
-				else if (!light.isOn() && Settings.Light.getActive(light))
+				else if (!light.isOn() && light.getActive())
 				{
 					lightOff = true;
 				}

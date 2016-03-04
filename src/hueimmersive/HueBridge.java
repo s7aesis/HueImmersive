@@ -22,7 +22,9 @@ public final class HueBridge implements IBridge
 	final int maxRegisterAttempts = 20;
 	final int registerPeriod = 1500;
 
-	private String internalipaddress = Settings.Bridge.getInternalipaddress();
+	private Settings.Bridge settings = new Settings.Bridge();
+
+	private String internalipaddress = settings.getInternalipaddress();
 
 	private final String username = "hueimmersiveuser";
 	private final String devicetype = "hueimmersive";
@@ -143,7 +145,7 @@ public final class HueBridge implements IBridge
 
 						internalipaddress = response.get("internalipaddress").getAsString();
 
-						Settings.Bridge.setInternalipaddress(internalipaddress);
+						settings.setInternalipaddress(internalipaddress);
 
 						login();
 					}

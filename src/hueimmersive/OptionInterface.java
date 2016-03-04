@@ -65,14 +65,14 @@ public class OptionInterface
 	private JCheckBox checkbox_Log;
 	private JPanel panel_Threshold;
 
-	public OptionInterface()
+	public OptionInterface() throws Exception
 	{
 		Main.ui.setEnabled(false);
 		initialize();
 		getOptions();
 	}
 	
-	private void initialize()
+	private void initialize() throws Exception
 	{
 		frame = new JFrame();
 		frame.setMinimumSize(new Dimension(460, 500));
@@ -81,8 +81,8 @@ public class OptionInterface
 			@Override
 			public void windowClosing(WindowEvent arg0) 
 			{
-				Settings.set("oi_x", frame.getX());
-				Settings.set("oi_y", frame.getY());
+				Settings.Main.setInt("oi_x", frame.getX());
+				Settings.Main.setInt("oi_y", frame.getY());
 				Main.ui.setEnabled(true);
 			}
 		});
@@ -90,7 +90,7 @@ public class OptionInterface
 		frame.setBounds(100, 100, 460, 500);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
-		frame.setLocation(Settings.getInteger("oi_x"), Settings.getInteger("oi_y"));
+		frame.setLocation(Settings.Main.getInt("oi_x"), Settings.Main.getInt("oi_y"));
 		frame.getContentPane().setLayout(new FormLayout(new ColumnSpec[] {
 				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("left:20dlu:grow"),
@@ -176,7 +176,13 @@ public class OptionInterface
 		button_Ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				saveOptions();
+				try
+				{
+					saveOptions();
+				} catch (Exception e1)
+				{
+					e1.printStackTrace();
+				}
 				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 				frame.dispose();
 			}
@@ -268,7 +274,13 @@ public class OptionInterface
 		button_Apply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				saveOptions();
+				try
+				{
+					saveOptions();
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		});
 		frame.getContentPane().add(button_Apply, "4, 16, fill, fill");
@@ -318,7 +330,7 @@ public class OptionInterface
 						return values[index];
 					}
 				});
-				list_Algorithms.setSelectedIndex(Settings.Light.getAlgorithm(light));
+				list_Algorithms.setSelectedIndex(light.getAlgorithm());
 				list_Algorithms.addMouseMotionListener(new MouseMotionAdapter() {
 					@Override
 					public void mouseMoved(MouseEvent arg0) 
@@ -355,7 +367,7 @@ public class OptionInterface
 				slider_Brightness.setMinorTickSpacing(5);
 				slider_Brightness.setMinimum(10);
 				slider_Brightness.setMaximum(100);
-				slider_Brightness.setValue(Settings.Light.getBrightness(light));			
+				slider_Brightness.setValue((int)(light.getBrightnessMultiplier() * 100));
 				panel_Brightness.add(slider_Brightness, "1, 1, center, center");
 				
 				final JLabel label_Brightness = new JLabel("100%");
@@ -370,7 +382,7 @@ public class OptionInterface
 				});
 				
 				final JCheckBox checkbox_Active = new JCheckBox();
-				checkbox_Active.setSelected(Settings.Light.getActive(light));
+				checkbox_Active.setSelected(light.getActive());
 				checkbox_Active.setToolTipText("allow the program to change this lights color and brightness");
 				if (checkbox_Active.isSelected() == false)
 				{
@@ -422,17 +434,17 @@ public class OptionInterface
 	
 	private void getOptions() // get saved options and setup window elements
 	{
-		checkbox_AutoTurnOff.setSelected(Settings.getBoolean("autoswitch"));
-		slider_Threshold.setValue(Settings.getInteger("autoswitchthreshold"));
+		checkbox_AutoTurnOff.setSelected(Settings.Main.getBoolean("autoswitch"));
+		slider_Threshold.setValue(Settings.Main.getInt("autoswitchthreshold"));
 		for (Component component : panel_Threshold.getComponents())
 		{
-			component.setEnabled(Settings.getBoolean("autoswitch"));
+			component.setEnabled(Settings.Main.getBoolean("autoswitch"));
 		}
 		
-		checkbox_UseGammaCorrection.setSelected(Settings.getBoolean("gammacorrection"));
-		checkbox_Screen.setSelectedIndex(Settings.getInteger("screen"));
+		checkbox_UseGammaCorrection.setSelected(Settings.Main.getBoolean("gammacorrection"));
+		checkbox_Screen.setSelectedIndex(Settings.Main.getInt("screen"));
 		
-		for (String arg : Settings.getArguments())
+		for (String arg : Settings.Main.getArguments())
 		{
 			switch (arg)
 			{
@@ -466,27 +478,27 @@ public class OptionInterface
 		checkbox_Log.setEnabled(true);
 	}
 	
-	private void saveOptions() // save all settings
+	private void saveOptions() throws Exception // save all settings
 	{
-		Settings.set("autoswitch", checkbox_AutoTurnOff.isSelected());
-		Settings.set("autoswitchthreshold", slider_Threshold.getValue());
-		Settings.set("gammacorrection", checkbox_UseGammaCorrection.isSelected());
+		Settings.Main.setBoolean("autoswitch", checkbox_AutoTurnOff.isSelected());
+		Settings.Main.setInt("autoswitchthreshold", slider_Threshold.getValue());
+		Settings.Main.setBoolean("gammacorrection", checkbox_UseGammaCorrection.isSelected());
 		
-		Settings.set("screen", checkbox_Screen.getSelectedIndex());
+		Settings.Main.setInt("screen", checkbox_Screen.getSelectedIndex());
 		
 		for (ILight light : Control.bridge.getLights())
 		{
 			JPanel panel_Light = (JPanel) panel_Lights.getComponent(Control.bridge.getLights().indexOf(light));
 			
 			JCheckBox checkbox_Active = (JCheckBox) panel_Light.getComponent(0);
-			Settings.Light.setActive(light, checkbox_Active.isSelected());
+			light.setActive(checkbox_Active.isSelected());
 			
 			JList list_Algorithms = (JList) panel_Light.getComponent(2);
-			Settings.Light.setAlgorithm(light, list_Algorithms.getSelectedIndex());
+			light.setAlgorithm(list_Algorithms.getSelectedIndex());
 			
 			JPanel panel_Brightness = (JPanel) panel_Light.getComponent(3);
 			JSlider slider_Brightness = (JSlider) panel_Brightness.getComponent(0);
-			Settings.Light.setBrightness(light, slider_Brightness.getValue());
+			light.setBrightnessMultiplier(slider_Brightness.getValue() / 100.0f);
 		}
 		
 		ArrayList<String> args = new ArrayList<String>();
@@ -506,7 +518,7 @@ public class OptionInterface
 		{
 			args.add("log");
 		}
-		Settings.setArguments(args);
+		Settings.Main.setArguments(args);
 		
 		try 
 		{

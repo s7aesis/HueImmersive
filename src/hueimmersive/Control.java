@@ -40,7 +40,7 @@ public class Control
 	public void setLight(ILight light, Color color) throws Exception // calculate color and send it to light
 	{		
 		float[] hsbColor = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null); // unmodified HSB color
-		color = Color.getHSBColor(hsbColor[0], Math.max(0f, Math.min(1f, hsbColor[1] * (Main.ui.slider_Saturation.getValue() / 100f))), (float)(hsbColor[2] * (Main.ui.slider_Brightness.getValue() / 100f) * (Settings.Light.getBrightness(light) / 100f))); // modified color
+		color = Color.getHSBColor(hsbColor[0], Math.max(0f, Math.min(1f, hsbColor[1] * (Main.ui.slider_Saturation.getValue() / 100f))), (float)(hsbColor[2] * (Main.ui.slider_Brightness.getValue() / 100f) * light.getBrightnessMultiplier())); // modified color
 		
 		light.setColor(color);
 
@@ -100,7 +100,7 @@ public class Control
 		};
 		
 		immersiveProcessIsActive = true;
-		captureLoop.scheduleAtFixedRate(task, 0, Math.round(Settings.getInteger("refreshdelay")));
+		captureLoop.scheduleAtFixedRate(task, 0, Math.round(Settings.Main.getInt("refreshdelay")));
 	}
 	
 	public void stopImmersiveProcess() throws Exception
@@ -119,7 +119,7 @@ public class Control
 		Thread.sleep(250);
 		ImmersiveProcess.setStandbyOutput();
 		
-		if (Settings.getBoolean("restorelight"))
+		if (Settings.Main.getBoolean("restorelight"))
 		{
 			Thread.sleep(750);
 			for(ILight light : bridge.getLights())
@@ -142,7 +142,7 @@ public class Control
 	{
 		for(ILight light : bridge.getLights())
 		{
-			if (Settings.Light.getActive(light))
+			if (light.getActive())
 			{
 				light.setOn(on);
 			}

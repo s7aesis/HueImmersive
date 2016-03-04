@@ -14,7 +14,7 @@ import javax.swing.ImageIcon;
 
 public class ImmersiveProcess
 {
-	private static Rectangle ScreenSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[Settings.getInteger("screen")].getDefaultConfiguration().getBounds();
+	private static Rectangle ScreenSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[Settings.Main.getInt("screen")].getDefaultConfiguration().getBounds();
 	public static Rectangle CaptureSize = new Rectangle(0, 0, ScreenSize.width, ScreenSize.height);
 	public static int chunksNumX;
 	public static int chunksNumY;
@@ -36,8 +36,8 @@ public class ImmersiveProcess
 		// setup screen area
 		double ratio;
 		int x, y, w, h;
-		ScreenSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[Settings.getInteger("screen")].getDefaultConfiguration().getBounds();
-		switch (Settings.getInteger("format"))
+		ScreenSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[Settings.Main.getInt("screen")].getDefaultConfiguration().getBounds();
+		switch (Settings.Main.getInt("format"))
 		{
 			case 0: // Fullscreen
 				ratio = 1.0;
@@ -90,7 +90,7 @@ public class ImmersiveProcess
 		CaptureSize = new Rectangle((int)ScreenSize.getX() + x, (int)ScreenSize.getY() + y, w, h);
 		
 		// calculate number of chunks
-		double chunks = Settings.getInteger("chunks");
+		double chunks = Settings.Main.getInt("chunks");
 		chunks = 3 + 0.35 * Math.pow(chunks, 1.4);
 		chunksNumX = (int) Math.round(chunks);
 		chunksNumY = (int) Math.round(((double)CaptureSize.height / (double)CaptureSize.width) * chunksNumX); 
@@ -103,18 +103,18 @@ public class ImmersiveProcess
 		capture();
 	}
 	
-	private static int lFormat = Settings.getInteger("format");
-	private static int lChunks = Settings.getInteger("chunks");
-	private static int lScreen = Settings.getInteger("screen");
+	private static int lFormat = Settings.Main.getInt("format");
+	private static int lChunks = Settings.Main.getInt("chunks");
+	private static int lScreen = Settings.Main.getInt("screen");
 	private static boolean forceStandbyColorGrid = false;
 	private static void applyChanges() throws Exception // apply changed settings
 	{
 		forceStandbyColorGrid = false;
-		if (Settings.getInteger("format") != lFormat || Settings.getInteger("chunks") != lChunks || Settings.getInteger("screen") != lScreen)
+		if (Settings.Main.getInt("format") != lFormat || Settings.Main.getInt("chunks") != lChunks || Settings.Main.getInt("screen") != lScreen)
 		{
-			lFormat = Settings.getInteger("format");
-			lChunks = Settings.getInteger("chunks");
-			lScreen = Settings.getInteger("screen");
+			lFormat = Settings.Main.getInt("format");
+			lChunks = Settings.Main.getInt("chunks");
+			lScreen = Settings.Main.getInt("screen");
 			setSettings();
 			Main.ui.cpi.setStandbyIcon(CaptureSize, chunksNumX, chunksNumY);
 			forceStandbyColorGrid = true;
@@ -297,8 +297,8 @@ public class ImmersiveProcess
 	{
 		for (ILight light : Control.bridge.getLights())
 		{
-			boolean active = Settings.Light.getActive(light);
-			int alg = Settings.Light.getAlgorithm(light);
+			boolean active = light.getActive();
+			int alg = light.getAlgorithm();
 			
 			if(active)
 			{
