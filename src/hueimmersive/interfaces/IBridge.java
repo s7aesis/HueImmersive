@@ -17,4 +17,6 @@ public interface IBridge
 
 	void findLights() throws Exception;
 	ArrayList<ILight> getLights();
+
+    void cleanup() throws Exception;
 }

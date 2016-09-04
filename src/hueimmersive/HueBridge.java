@@ -56,7 +56,7 @@ public final class HueBridge implements IBridge
 		Main.ui.setConnectState(3);
 
 		String devicetype = applicationname;
-		if (devicename != null && devicename.isEmpty())
+		if (devicename != null && !devicename.isEmpty())
 		{
 			devicetype += "#" + devicename;
 		}
@@ -242,5 +242,13 @@ public final class HueBridge implements IBridge
 				"timezone: " + response.get("timezone").getAsString(),
 				"swversion: " + response.get("swversion").getAsString(),
 				"apiversion: " + response.get("apiversion").getAsString());
+	}
+
+	public void cleanup() throws Exception
+	{
+		if (username != null && !username.isEmpty())
+		{
+			getLink().DELETE("/config/whitelist/" + username);
+		}
 	}
 }

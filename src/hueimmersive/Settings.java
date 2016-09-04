@@ -3,10 +3,7 @@ package hueimmersive;
 import hueimmersive.interfaces.ILight;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -105,7 +102,13 @@ public class Settings
 	public static void reset(boolean exit) throws Exception
 	{
 		Debug.info(null, "reset all settings");
+
 		basenode.removeNode();
+		if (Control.bridge != null && Control.bridge.isConnected())
+		{
+			Control.bridge.cleanup();
+		}
+
 		if(exit)
 		{
 			Debug.closeLog();

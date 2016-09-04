@@ -96,9 +96,27 @@ public abstract class Link implements ILink
 		return extractJsonObject(input);
 	}
 
-	public final JsonObject DELETE() throws Exception
+	public final JsonObject DELETE(String APIurl) throws Exception
 	{
-		throw new UnsupportedOperationException("DELETE");
+		URL url = new URL(getBaseAPIurl() + APIurl);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("DELETE");
+
+		String input = null;
+
+		if (canConnect(connection))
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			input = reader.readLine();
+			reader.close();
+
+			return extractJsonObject(input);
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public final boolean canConnect(HttpURLConnection connection)
