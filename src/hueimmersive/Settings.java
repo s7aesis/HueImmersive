@@ -262,6 +262,7 @@ public class Settings
 			node("bridge");
 
 			addDefaultEntry("internalipaddress", null);
+			addDefaultEntry("username", null);
 		}
 
 		String getInternalipaddress()
@@ -273,6 +274,10 @@ public class Settings
 		{
 			setString("internalipaddress", address);
 		}
+
+		String getUsername() { return getString("username"); }
+
+		void setUsername(String username) { setString("username", username); }
 
 		public static void debug() throws Exception
 		{

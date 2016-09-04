@@ -8,26 +8,25 @@ import hueimmersive.lights.HDimmableLight;
 import hueimmersive.lights.HLight;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.google.gson.JsonObject;
 
 
 public final class HueBridge implements IBridge
 {
-	final int maxFindAttempts = 6;
-	final int findPeriod = 1500;
+	private static final int maxFindAttempts = 6;
+	private static final int findPeriod = 1500;
 
-	final int maxRegisterAttempts = 20;
-	final int registerPeriod = 1500;
+	private static final int maxRegisterAttempts = 20;
+	private static final int registerPeriod = 1500;
 
 	private Settings.Bridge settings = new Settings.Bridge();
 
 	private String internalipaddress = settings.getInternalipaddress();
+	private String username = settings.getUsername();
 
-	private final String username = "hueimmersiveuser";
-	private final String devicetype = "hueimmersive";
+	private static final String applicationname = "HueImmersive";
+	private final String devicename = System.getProperty("user.name");
 
 	private final ArrayList<HLight> lights = new ArrayList<HLight>();
 
@@ -35,7 +34,7 @@ public final class HueBridge implements IBridge
 	
 	public HueBridge() throws Exception
 	{
-		if (internalipaddress != null)
+		if (internalipaddress != null && !internalipaddress.isEmpty() && username != null && !username.isEmpty())
 		{
 			connect();
 		}
@@ -56,46 +55,55 @@ public final class HueBridge implements IBridge
 
 		Main.ui.setConnectState(3);
 
+		String devicetype = applicationname;
+		if (devicename != null && devicename.isEmpty())
+		{
+			devicetype += "#" + devicename;
+		}
+
 		JsonObject data = new JsonObject();
 		data.addProperty("devicetype", devicetype);
-		data.addProperty("username", username);
 
-		final Timer timer = new Timer();
-		TimerTask registerLoop = new TimerTask()
+		String username = null;
+		int attempts = 0;
+		while (attempts < maxRegisterAttempts) // abort after serval attempt
 		{
-			int attempt = 0;
-			public void run()
+			try // to register a new bridge user (user must press the link button)
 			{
-				try // to register a new bridge user (user must press the link button)
+				JsonObject response = getLink().POST("http://" + internalipaddress + "/api/", data);
+
+				if (getLink().getResponseType(response) == ILink.ResponseType.SUCCESS)
 				{
-					attempt++;
-					JsonObject response = getLink().POST("http://" + internalipaddress + "/api/", data);
-					if (getLink().getResponseType(response) == ILink.ResponseType.SUCCESS)
-					{
-						Debug.info(null, "new user created");
-
-						timer.cancel();
-						timer.purge();
-
-						login();
-					}
-					else if (attempt > maxRegisterAttempts) // abort after serval attempt
-					{
-						Debug.info(null, "link button not pressed");
-
-						timer.cancel();
-						timer.purge();
-
-						Main.ui.setConnectState(4);
-					}
-				}
-				catch (Exception e)
-				{
-					Debug.exception(e);
+					username = response.get("success").getAsJsonObject().get("username").getAsString();
+					break;
 				}
 			}
-		};
-		timer.scheduleAtFixedRate(registerLoop, registerPeriod, registerPeriod);
+			catch (Exception e)
+			{
+				Debug.exception(e);
+				break;
+			}
+
+			attempts++;
+
+			Thread.sleep(registerPeriod);
+		}
+
+		if (username != null)
+		{
+			Debug.info(null, "new user created");
+
+			this.username = username;
+			settings.setUsername(username);
+
+			login();
+		}
+		else
+		{
+			Debug.info(null, "link button not pressed");
+
+			Main.ui.setConnectState(4);
+		}
 	}
 
 	public void login() throws Exception // try to login
@@ -103,11 +111,11 @@ public final class HueBridge implements IBridge
 		JsonObject response = getLink().GET("http://" + internalipaddress + "/api/" + username);
 		if (getLink().getResponseType(response) == ILink.ResponseType.DATA)
 		{
-			Debug.info(null, "login successfull");
+			Debug.info(null, "login successful");
 
 			getLink().setBaseAPIurl("http://" + internalipaddress + "/api/" + username);
 
-			debug();
+			dumpBridgeConfig();
 			
 			findLights();
 			
@@ -126,56 +134,44 @@ public final class HueBridge implements IBridge
 		Main.ui.loadConnectionInterface();
 		Main.ui.setConnectState(1);
 
-		final Timer timer = new Timer();
-		TimerTask findLoop = new TimerTask()
+		String internalipaddress = null;
+		int attempts = 0;
+		while (attempts < maxFindAttempts) // abort after several attempts
 		{
-			int attempt = 0;
-			public void run()
+			try // to get the bridge ip
 			{
-				try // to get the bridge ip
+				JsonObject response = getLink().GET("https://www.meethue.com/api/nupnp");
+
+				if (response != null)
 				{
-					JsonObject response = getLink().GET("https://www.meethue.com/api/nupnp");
-
-					if (response != null)
-					{
-						Debug.info(null, "bridge found");
-
-						timer.cancel();
-						timer.purge();
-
-						internalipaddress = response.get("internalipaddress").getAsString();
-
-						settings.setInternalipaddress(internalipaddress);
-
-						login();
-					}
+					internalipaddress = response.get("internalipaddress").getAsString();
+					break;
 				}
-				catch (Exception e)
-				{
-					Debug.exception(e);
-				}
-
-				if (attempt > maxFindAttempts) // abort after serval attempts
-				{
-					try
-					{
-						Debug.info(null, "connection to bridge timeout");
-
-						timer.cancel();
-						timer.purge();
-
-						Main.ui.setConnectState(4);
-					}
-					catch (Exception e)
-					{
-						Debug.exception(e);
-					}
-				}
-
-				attempt++;
 			}
-		};
-		timer.scheduleAtFixedRate(findLoop, 0, findPeriod);
+			catch (Exception e)
+			{
+				Debug.exception(e);
+			}
+
+			attempts++;
+			Thread.sleep(findPeriod);
+		}
+
+		if (internalipaddress != null)
+		{
+			Debug.info(null, "bridge found");
+
+			this.internalipaddress = internalipaddress;
+			settings.setInternalipaddress(internalipaddress);
+
+			login();
+		}
+		else
+		{
+			Debug.info(null, "connection to bridge timeout");
+
+			Main.ui.setConnectState(4);
+		}
 	}
 
 	public void connect() throws Exception
@@ -183,20 +179,19 @@ public final class HueBridge implements IBridge
 		Debug.info(null, "try fast connect...");
 
 		JsonObject response = getLink().GET("http://" + internalipaddress + "/api/" + username);
-
 		if (getLink().getResponseType(response) == ILink.ResponseType.DATA)
 		{
-			Debug.info(null, "fast connect successfull");
+			Debug.info(null, "fast connect successful");
 
 			getLink().setBaseAPIurl("http://" + internalipaddress + "/api/" + username);
 
-			debug();
+			dumpBridgeConfig();
 
 			findLights();
 		}
 		else
 		{
-			Debug.info(null, "can't find bridge");
+			Debug.info(null, "can't connect to bridge");
 
 			find();
 		}
@@ -232,7 +227,12 @@ public final class HueBridge implements IBridge
 		return new ArrayList<ILight>(lights);
 	}
 
-	public void debug() throws Exception
+	public boolean isConnected() throws Exception
+	{
+		return getLink().getResponseType(getLink().GET("")) == ILink.ResponseType.DATA;
+	}
+
+	public void dumpBridgeConfig() throws Exception
 	{
 		JsonObject response = getLink().GET("/config");
 

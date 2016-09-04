@@ -21,19 +21,22 @@ public class Control
 	{
 		bridge = new HueBridge();
 
-		Main.ui.loadMainInterface();
+		if (bridge.isConnected())
+		{
+			Main.ui.loadMainInterface();
 
-		if (Main.arguments.contains("force-on") && !Main.arguments.contains("force-off"))
-		{
-			setAllActiveLightsOn(true);
-		}
-		if (Main.arguments.contains("force-off") && !Main.arguments.contains("force-on"))
-		{
-			setAllActiveLightsOn(false);
-		}
-		if (Main.arguments.contains("force-start") && !Main.arguments.contains("force-off"))
-		{
-			startImmersiveProcess();
+			if (Main.arguments.contains("force-on") && !Main.arguments.contains("force-off"))
+			{
+				setAllActiveLightsOn(true);
+			}
+			if (Main.arguments.contains("force-off") && !Main.arguments.contains("force-on"))
+			{
+				setAllActiveLightsOn(false);
+			}
+			if (Main.arguments.contains("force-start") && !Main.arguments.contains("force-off"))
+			{
+				startImmersiveProcess();
+			}
 		}
 	}
 	
