@@ -1,6 +1,7 @@
 package hueimmersive;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,13 +13,39 @@ public class Main
 	public static MainInterface ui;
 	public static Control hueControl;
 	
-	public static final String version = "0.5.1";
-	public static final int build = 19;
+	public static final String version;
+	public static final Integer build;
 	
 	public static boolean updateAvailable;
 	
 	public static ArrayList<String> arguments = new ArrayList<String>();
-	
+
+	static
+	{
+		Integer b = null;
+		String v = null;
+		try
+		{
+			InputStream is = Main.class.getClassLoader().getResourceAsStream("META-INF/VERSION");
+			if (is != null)
+			{
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+				b = Integer.parseInt(br.readLine());
+				v = br.readLine();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			version = v;
+			build = b;
+		}
+	}
+
 	public static void main(String[] args) throws Exception
 	{
 		arguments.addAll(Arrays.asList(args));
@@ -82,7 +109,10 @@ public class Main
 	}
 	
 	private static void checkForUpdate() throws Exception // check for new updates
-	{		
+	{
+		if (build == null)
+			return;
+
 		try
 		{
 			URL versionUrl = new URL("https://raw.githubusercontent.com/Blodjer/HueImmersive/master/VERSION"); // get version and build number from GitHub
@@ -108,7 +138,10 @@ public class Main
 		{
 			Debug.exception(e);
 		}
-			
 	}
-	
+
+	public static String getVersionText()
+	{
+		return version != null ? "v" + version : "dev";
+	}
 }

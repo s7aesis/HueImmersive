@@ -73,7 +73,7 @@ public class AboutInterface
 		lblHueimmersive.setBounds(10, 9, 478, 32);
 		frame.getContentPane().add(lblHueimmersive);
 		
-		JLabel label_Version = new JLabel("v" + String.valueOf(Main.version));
+		JLabel label_Version = new JLabel(Main.getVersionText());
 		label_Version.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		label_Version.setHorizontalAlignment(SwingConstants.CENTER);
 		label_Version.setBounds(10, 44, 478, 14);

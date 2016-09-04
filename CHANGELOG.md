@@ -1,3 +1,17 @@
+## v0.6 (4 Sep 2016) ##
+ - updated bridge login and user registration
+ - add support for more hue bulb models
+ - add transition time slider
+ - add dependence check between startup arguments
+ - add auto turn off threshold slider
+ - reworked settings backend
+ - reworked lights backend
+ - improved automatic turn off algorithm
+ - improved build tagging
+ - updated jgoodies lib
+ - fixed brightness when turning lights on
+ - fixed typos
+
 ## v0.5 (24 Dec 2014) ##
  - add saturation slider
  - add new start parameters: force-on, force-off, force-start
@@ -8,7 +22,7 @@
  - fixed on/off button bug
  - fixed problem with multiple startup parameters
  - fixed debug formation
- - fixed/prevent purple oversaturation
+ - fixed/prevent purple over-saturation
  - fixed connection if bridge ip changed
  - fixed problem at second start with unauthorized user
  - fixed default settings setup
@@ -19,7 +33,7 @@
 
 ## v0.4.4 (26 Oct 2014) ##
  - program affects only 'Extended color lights'
- - add more / changed debug informations
+ - add more / changed debug information
  - on/off button affects only activated lights
  - fixed some issues with changed light id's
  - fixed option interface crash if no lights have been detected
@@ -34,7 +48,7 @@
  - change changelog formation
  - change 'about' text
  - add License
- - whole lot of class, variable, method renamings
+ - whole lot of class, variable, method renaming
  - clean up code
 
 ## v0.4.2 (18 Sep 2014) ##
@@ -50,11 +64,11 @@
  - code optimizations
 
 ## v0.4 (9 Sep 2014) ##
- - add new color algorithm (average color) more infos here: http://imgur.com/a/JrJxY
+ - add new color algorithm (average color)
  - connection data will now be saved (faster connection, faster startup)
  - add brightness option for each light
  - add tooltips
- - connection interface is now intergrated into the main interface
+ - connection interface is now integrated into the main interface
  - some UI improvements
  - chunks slider is now exponentially
  - chunks are now more like squares
@@ -69,10 +83,10 @@
 
 ## v0.3.2 (29 Aug 2014) ##
  - font size keeps the same no matter what DPI you're system set
- - costum UI colors are no longer system dependent
+ - custom UI colors are no longer system dependent
  - display names are now simplified
  - changed minimum number of chunks
- - chnaged changelog font size
+ - changed changelog font size
  - number of chunks is now calculated correctly
 
 ## v0.3.1.3 (29 Aug 2014) ##

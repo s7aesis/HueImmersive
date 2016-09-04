@@ -668,7 +668,7 @@ public class MainInterface
 		panel.add(rigidarea);
 		
 		// Label version
-		JLabel label_Version = new JLabel("v" + Main.version);
+		JLabel label_Version = new JLabel(Main.getVersionText());
 		label_Version.setEnabled(false);
 		panel.add(label_Version);
 		
