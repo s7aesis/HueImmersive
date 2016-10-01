@@ -25,7 +25,7 @@ public interface ILink
 
 	JsonObject POST(String APIurl, JsonObject data) throws Exception;
 
-	JsonObject DELETE() throws Exception;
+	JsonObject DELETE(String APIurl) throws Exception;
 
 	boolean canConnect(HttpURLConnection connection);
 

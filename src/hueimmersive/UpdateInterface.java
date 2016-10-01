@@ -83,14 +83,14 @@ public class UpdateInterface
 		lblLatestVersion.setBounds(10, 36, 75, 14);
 		frame.getContentPane().add(lblLatestVersion);
 		
-		JLabel label_TVersion = new JLabel(String.valueOf(Main.version));
+		JLabel label_TVersion = new JLabel(Main.getVersionText());
 		label_TVersion.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		label_TVersion.setBounds(95, 11, 46, 14);
+		label_TVersion.setBounds(95, 11, 61, 14);
 		frame.getContentPane().add(label_TVersion);
 		
 		label_LVersion = new JLabel("-");
 		label_LVersion.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		label_LVersion.setBounds(95, 36, 46, 14);
+		label_LVersion.setBounds(95, 36, 61, 14);
 		frame.getContentPane().add(label_LVersion);
 		
 		button_Update = new JButton("UPDATE");
@@ -114,7 +114,7 @@ public class UpdateInterface
 		label_Status = new JLabel("up to date");
 		label_Status.setHorizontalAlignment(SwingConstants.CENTER);
 		label_Status.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		label_Status.setBounds(158, 11, 261, 39);
+		label_Status.setBounds(166, 11, 253, 39);
 		frame.getContentPane().add(label_Status);
 	}
 	
@@ -143,8 +143,13 @@ public class UpdateInterface
 	        textarea_Changelog.setText(changelog);
 	        textarea_Changelog.setCaretPosition(0);    
 	        changelogIn.close();
-	        
-	        if(Main.build < Integer.valueOf(lBuild))
+
+			if (Main.build == null)
+			{
+				label_Status.setText("development build");
+				button_Update.setEnabled(false);
+			}
+	        else if (Main.build < Integer.valueOf(lBuild))
 	        {
 	        	button_Update.setEnabled(true);
 	        	label_Status.setText("update available");

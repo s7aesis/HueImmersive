@@ -13,6 +13,10 @@ public interface IBridge
 	void find() throws Exception;
 	void connect() throws Exception;
 
+	boolean isConnected() throws Exception;
+
 	void findLights() throws Exception;
 	ArrayList<ILight> getLights();
+
+    void cleanup() throws Exception;
 }

@@ -32,13 +32,13 @@ public class ColorGridInterface
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 640, 360);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setLocation(Settings.getInteger("cpi_x"), Settings.getInteger("cpi_y"));
+		frame.setLocation(Settings.Main.getInt("cpi_x"), Settings.Main.getInt("cpi_y"));
 		
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				Main.ui.checkbox_ShowColorGrid.setSelected(false);
-				Settings.set("colorgrid", false);
+				Settings.Main.setBoolean("colorgrid", false);
 				hide();
 			}
 		});
@@ -58,15 +58,15 @@ public class ColorGridInterface
 	public void show() throws Exception
 	{
 		frame.setVisible(true);
-		frame.setLocation(Settings.getInteger("cpi_x"), Settings.getInteger("cpi_y"));
+		frame.setLocation(Settings.Main.getInt("cpi_x"), Settings.Main.getInt("cpi_y"));
 		ImmersiveProcess.setStandbyOutput();
 	}
 	
 	public void hide()
 	{
 		frame.setVisible(false);
-		Settings.set("cpi_x", frame.getX());
-		Settings.set("cpi_y", frame.getY());
+		Settings.Main.setInt("cpi_x", frame.getX());
+		Settings.Main.setInt("cpi_y", frame.getY());
 	}
 	
 	public void setStandbyIcon(Rectangle CaptureSize, int ChunksNumX, int ChunksNumY) throws Exception // set a default image to illustrate the the chunks amount

@@ -11,9 +11,11 @@ public abstract class HLight implements ILight
 {
 	protected final HueBridge bridge;
 
-	protected final int id;
 	protected final String name;
+	protected final int id;
 	protected final String uniqueid;
+
+	protected final Settings.Light settings;
 
 	public HLight(int id, HueBridge bridge) throws Exception
 	{
@@ -25,7 +27,22 @@ public abstract class HLight implements ILight
 		this.name = response.get("name").getAsString();
 		this.uniqueid = response.get("uniqueid").getAsString();
 
-		Settings.Light.check(this);
+		settings = new Settings.Light(this);
+	}
+
+	public final String getName()
+	{
+		return name;
+	}
+
+	public final int getID()
+	{
+		return id;
+	}
+
+	public final String getUniqueID()
+	{
+		return uniqueid;
 	}
 
 	public final boolean isOn() throws Exception
@@ -43,18 +60,33 @@ public abstract class HLight implements ILight
 		bridge.getLink().PUT("/lights/" + id + "/state/", data);
 	}
 
-	public final String getName()
+	public final boolean getActive() throws Exception
 	{
-		return name;
+		return settings.getActive();
 	}
 
-	public final String getUniqueID()
+	public final void setActive(boolean active) throws Exception
 	{
-		return uniqueid;
+		settings.setActive(active);
 	}
 
-	public final int getID()
+	public final float getBrightnessMultiplier() throws Exception
 	{
-		return id;
+		return settings.getBrightnessMultiplier();
+	}
+
+	public final void setBrightnessMultiplier(float multiplier) throws Exception
+	{
+		settings.setBrightnessMultiplier(multiplier);
+	}
+
+	public final int getAlgorithm() throws Exception
+	{
+		return settings.getAlgorithm();
+	}
+
+	public final void setAlgorithm(int algorithm) throws Exception
+	{
+		settings.setAlgorithm(algorithm);
 	}
 }
